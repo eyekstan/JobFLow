@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#007AFF">
+  <meta name="description" content="JobFlow - Fast job lead and project management for contractors">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="JobFlow">
+  <title>JobFlow</title>
+  
+  <!-- TailwindCSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="styles.css">
+  
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="manifest.json">
+  
+  <!-- Apple Touch Icon -->
+  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%23007AFF' width='100' height='100' rx='20'/><text x='50' y='65' font-size='50' text-anchor='middle' fill='white' font-family='system-ui'>J</text></svg>">
+</head>
+<body class="bg-gray-100 min-h-screen pb-20">
+  <!-- App Container -->
+  <div id="app" class="min-h-screen">
+    <!-- Header -->
+    <header class="bg-[#007AFF] text-white px-4 py-3 shadow-lg sticky top-0 z-50">
+      <div class="flex items-center justify-between">
+        <h1 class="text-xl font-bold">JobFlow</h1>
+        <span class="text-sm opacity-80" id="currentDate"></span>
+      </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main id="screen-container" class="p-4">
+      <!-- Screens render here -->
+    </main>
+
+    <!-- Bottom Navigation -->
+    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-50">
+      <div class="flex h-16">
+        <button class="nav-btn flex-1 flex flex-col items-center justify-center h-full py-3" data-screen="dashboard">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+          </svg>
+          <span class="text-xs mt-1">Dashboard</span>
+        </button>
+        <button class="nav-btn flex-1 flex flex-col items-center justify-center h-full py-3" data-screen="pipeline">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2"/>
+          </svg>
+          <span class="text-xs mt-1">Pipeline</span>
+        </button>
+      </div>
+    </nav>
+
+    <!-- Floating New Lead Button -->
+    <button id="fab" class="fixed bottom-4 right-4 w-16 h-16 rounded-full bg-[#007AFF] text-white flex items-center justify-center shadow-lg z-40 transform -translate-y-2" data-screen="newlead">
+      <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Load Components and Screens (must load before app.js) -->
+  <script src="components/ProjectCard.js"></script>
+  <script src="components/ActionButton.js"></script>
+  <script src="screens/DashboardScreen.js"></script>
+  <script src="screens/QuickCaptureScreen.js"></script>
+  <script src="screens/ProjectDetailScreen.js"></script>
+  <script src="screens/PipelineScreen.js"></script>
+  
+  <!-- Load Main App -->
+  <script src="app.js"></script>
+</body>
+</html>
