@@ -1,164 +1,256 @@
-/* JobFlow Custom Styles */
+/* JobFlow Custom Styles - Material Design */
 
-/* Status Badge Colors */
-.status-badge {
-  @apply inline-flex items-center px-2 py-1 rounded-full text-xs font-medium;
+/* Base font */
+* {
+  font-family: 'Roboto', sans-serif;
+  box-sizing: border-box;
 }
 
-.status-lead { @apply bg-gray-100 text-gray-700; }
-.status-visit { @apply bg-blue-100 text-blue-700; }
-.status-quote { @apply bg-yellow-100 text-yellow-700; }
-.status-approved { @apply bg-purple-100 text-purple-700; }
-.status-scheduled { @apply bg-indigo-100 text-indigo-700; }
-.status-in-progress { @apply bg-orange-100 text-orange-700; }
-.status-complete { @apply bg-green-100 text-green-700; }
+/* Status Badge Colors - Filled Material Style */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.status-lead { background-color: #4b5563; color: white; }
+.status-visit { background-color: #2563eb; color: white; }
+.status-quote { background-color: #ca8a04; color: white; }
+.status-approved { background-color: #0d9488; color: white; }
+.status-scheduled { background-color: #9333ea; color: white; }
+.status-in-progress { background-color: #16a34a; color: white; }
+.status-complete { background-color: #1f2937; color: white; }
 
 /* Today's Action Card Highlight */
 .today-action {
-  @apply border-l-4 border-l-[#FF9500] bg-orange-50;
+  border-left: 4px solid #f97316;
 }
 
-/* Project Card */
+/* Project Card - Strong Shadow and Rounded Corners */
 .project-card {
-  @apply bg-white rounded-xl p-4 shadow-sm mb-3 transition-all duration-200;
+  background: white;
+  border-radius: 16px;
+  margin-bottom: 20px;
+  padding: 16px;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1), 0 2px 4px rgba(0,0,0,0.06);
+  transition: box-shadow 0.2s ease, transform 0.1s ease;
+}
+
+.project-card:hover {
+  box-shadow: 0 10px 15px rgba(0,0,0,0.1), 0 4px 6px rgba(0,0,0,0.05);
 }
 
 .project-card:active {
-  @apply shadow-md transform scale-[0.98];
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  transform: scale(0.98);
+  transition: transform 0.05s ease;
 }
 
 .project-card.today-action {
-  @apply border-l-4 border-l-[#FF9500];
+  border-left: 4px solid #f97316;
 }
 
-/* Form Inputs */
+/* Form Inputs - Full Border Style */
 .form-input {
-  @apply w-full px-4 py-3 rounded-lg border border-gray-300 text-base;
-  @apply focus:outline-none focus:border-[#007AFF] focus:ring-2 focus:ring-[#007AFF]/20;
-  @apply transition-all duration-200;
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 2px solid #d1d5db;
+  font-size: 16px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  background: white;
+  box-sizing: border-box;
 }
 
+.form-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+.form-input::placeholder {
+  color: #9ca3af;
+}
+
+/* Large Form Inputs */
+.form-input-lg {
+  padding: 20px 20px;
+  font-size: 20px;
+  border-radius: 12px;
+}
+
+.form-input-lg::placeholder {
+  color: #9ca3af;
+}
+
+/* Large Form Labels */
 .form-label {
-  @apply block text-sm font-medium text-gray-700 mb-1;
+  display: block;
+  font-size: 18px;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 8px;
 }
 
 /* Action Buttons */
 .action-btn {
-  @apply w-full py-3 px-4 rounded-lg font-semibold text-base;
-  @apply transition-all duration-200 active:scale-[0.98];
-  @apply flex items-center justify-center gap-2;
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 48px;
+  box-sizing: border-box;
+  border: none;
+  cursor: pointer;
+}
+
+.action-btn:active {
+  transform: scale(0.98);
+}
+
+/* Large Action Button */
+.action-btn-lg {
+  padding: 20px 24px;
+  border-radius: 12px;
+  font-size: 20px;
+  font-weight: 700;
+  min-height: 64px;
+  text-transform: none;
 }
 
 .action-btn-primary {
-  @apply bg-[#007AFF] text-white;
+  background-color: #007AFF;
+  color: white;
 }
 
 .action-btn-primary:active {
-  @apply bg-blue-600;
-}
-
-.action-btn-success {
-  @apply bg-[#34C759] text-white;
-}
-
-.action-btn-success:active {
-  @apply bg-green-600;
-}
-
-.action-btn-accent {
-  @apply bg-[#FF9500] text-white;
-}
-
-.action-btn-accent:active {
-  @apply bg-orange-600;
-}
-
-.action-btn-outline {
-  @apply bg-white border-2 border-[#007AFF] text-[#007AFF];
-}
-
-.action-btn-outline:active {
-  @apply bg-blue-50;
-}
-
-/* Action Button Grid in Detail Screen */
-.action-buttons-grid {
-  @apply grid grid-cols-2 gap-3 mt-4;
+  background-color: #0056b3;
 }
 
 /* Screen Header */
 .screen-header {
-  @apply text-xl font-bold text-gray-800 mb-4;
+  font-size: 24px;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 24px;
 }
 
 /* Section Header */
 .section-header {
-  @apply text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3;
+  font-size: 14px;
+  font-weight: 500;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 12px;
 }
 
 /* Pipeline Section */
 .pipeline-section {
-  @apply mb-6;
+  margin-bottom: 24px;
 }
 
 .pipeline-header {
-  @apply flex items-center justify-between mb-3 px-1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
 }
 
 .pipeline-count {
-  @apply bg-gray-200 text-gray-700 px-2 py-0.5 rounded-full text-sm font-medium;
+  background-color: #e5e7eb;
+  color: #374151;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  font-size: 14px;
+  font-weight: 500;
 }
 
 /* Navigation */
 .nav-btn.active {
-  @apply text-[#007AFF];
+  color: #007AFF;
 }
 
 .nav-btn {
-  @apply text-gray-500 transition-colors duration-200;
+  color: #6b7280;
+  transition: color 0.2s;
 }
 
 .nav-btn:active {
-  @apply bg-gray-100;
+  background-color: #f3f4f6;
+  color: #374151;
 }
 
-/* Floating Action Button (New Lead in nav) */
+/* Floating Action Button */
 #fab {
-  @apply transition-transform duration-200 active:scale-90;
-  box-shadow: 0 4px 14px rgba(0, 122, 255, 0.4);
+  transition: all 0.2s;
+  box-shadow: 0 6px 10px rgba(0,0,0,0.14), 0 2px 5px rgba(0,0,0,0.12);
 }
 
 #fab:active {
-  @apply transform scale-90;
+  box-shadow: 0 3px 5px rgba(0,0,0,0.1);
+  transform: scale(0.95);
 }
 
 /* Empty State */
 .empty-state {
-  @apply text-center py-8 text-gray-500;
+  text-align: center;
+  padding: 48px 24px;
+  color: #9ca3af;
 }
 
 /* Loading */
 .loading {
-  @apply flex items-center justify-center py-8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px;
 }
 
 /* Back Button */
 .back-btn {
-  @apply flex items-center gap-2 text-gray-600 mb-4;
-  @apply active:text-gray-800;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #4b5563;
+  margin-bottom: 16px;
+  font-size: 16px;
+  font-weight: 500;
+  min-height: 48px;
+  padding: 12px 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.back-btn:active {
+  color: #1f2937;
 }
 
 /* Phone Link */
 .phone-link {
-  @apply text-[#007AFF] font-semibold;
+  color: #007AFF;
+  font-weight: 500;
+  font-size: 18px;
 }
 
 /* Date Display */
 .date-display {
-  @apply text-sm text-gray-500;
+  font-size: 14px;
+  color: #6b7280;
 }
 
-/* Hide scrollbar but allow scroll */
+/* Hide scrollbar */
 .scroll-container {
   -ms-overflow-style: none;
   scrollbar-width: none;
@@ -168,10 +260,46 @@
   display: none;
 }
 
-/* Prevent text selection on cards */
+/* Prevent text selection */
 .no-select {
   -webkit-user-select: none;
   user-select: none;
+}
+
+/* Project Card Content */
+.project-card h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.project-card p {
+  font-size: 14px;
+  color: #4b5563;
+  margin-top: 4px;
+}
+
+/* Project detail sections */
+.project-detail-card {
+  background: white;
+  border-radius: 16px;
+  margin-bottom: 16px;
+  padding: 20px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.detail-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: #6b7280;
+  text-transform: uppercase;
+}
+
+.detail-value {
+  font-size: 16px;
+  font-weight: 600;
+  color: #111827;
+  margin-top: 2px;
 }
 
 /* Touch optimization */
@@ -179,6 +307,13 @@
   .project-card,
   .action-btn,
   .nav-btn {
-    min-height: 44px;
+    min-height: 48px;
   }
+}
+
+/* Better focus states for accessibility */
+button:focus,
+input:focus {
+  outline: 2px solid rgba(0, 122, 255, 0.5);
+  outline-offset: 2px;
 }
