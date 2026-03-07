@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#007AFF">
+  <meta name="description" content="JobFlow - Fast job lead and project management for contractors">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="JobFlow">
+  <title>JobFlow</title>
+  
+  <!-- Google Fonts - Roboto (Android default) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  
+  <!-- TailwindCSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="styles.css">
+  
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="manifest.json">
+  
+  <!-- Apple Touch Icon -->
+  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%23007AFF' width='100' height='100' rx='20'/><text x='50' y='65' font-size='50' text-anchor='middle' fill='white' font-family='system-ui'>J</text></svg>">
+</head>
+<body class="bg-gray-50 min-h-screen pb-16">
+  <!-- App Container -->
+  <div id="app" class="min-h-screen">
+    <!-- Header -->
+    <header class="bg-white text-blue-600 px-5 py-4 shadow-md sticky top-0 z-50 border-b border-gray-200">
+      <div class="flex items-center justify-between">
+        <h1 class="text-2xl font-bold">JobFlow</h1>
+        <span class="text-base text-gray-500" id="currentDate"></span>
+        <button id="menuBtn" class="p-2">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Menu Dropdown -->
+    <div id="menuDropdown" class="hidden fixed top-16 right-4 bg-white rounded-lg shadow-lg border border-gray-200 z-50 py-2 min-w-32">
+      <button onclick="App.navigateTo('archive'); document.getElementById('menuDropdown').classList.add('hidden');" class="w-full px-4 py-3 text-left text-base font-medium text-gray-700 hover:bg-gray-100">Archive</button>
+      <button onclick="App.navigateTo('settings'); document.getElementById('menuDropdown').classList.add('hidden');" class="w-full px-4 py-3 text-left text-base font-medium text-gray-700 hover:bg-gray-100">Settings</button>
+    </div>
+
+    <!-- Main Content Area -->
+    <main id="screen-container" class="p-4">
+      <!-- Screens render here -->
+    </main>
+
+    <!-- Bottom Navigation -->
+    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-50">
+      <div class="flex h-16">
+        <button class="nav-btn flex-1 flex items-center justify-center h-full text-base font-medium" data-screen="pipeline">
+          Pipeline
+        </button>
+        <button class="nav-btn flex-1 flex items-center justify-center h-full text-base font-medium" data-screen="dashboard">
+          Dashboard
+        </button>
+      </div>
+    </nav>
+
+    <!-- Floating New Lead Button -->
+    <button id="fab" class="fixed bottom-20 right-4 w-18 h-18 rounded-full bg-[#007AFF] text-white flex items-center justify-center shadow-lg z-40" style="width: 72px; height: 72px;" data-screen="newlead">
+      <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Load Components and Screens (must load before app.js) -->
+  <script src="lib/store.js"></script>
+  <script src="components/ProjectCard.js"></script>
+  <script src="components/ActionButton.js"></script>
+  <script src="screens/DashboardScreen.js"></script>
+  <script src="screens/QuickCaptureScreen.js"></script>
+  <script src="screens/ProjectDetailScreen.js"></script>
+  <script src="screens/PipelineScreen.js"></script>
+  <script src="screens/SettingsScreen.js"></script>
+  <script src="screens/ArchiveScreen.js"></script>
+  
+  <!-- Load Main App -->
+  <script src="app.js"></script>
+</body>
+</html>
