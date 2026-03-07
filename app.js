@@ -4,112 +4,41 @@
  */
 
 // ============================================
-// DATA STORAGE
+// UTILITY FUNCTIONS
 // ============================================
 
-const Storage = {
-  // Get all projects from LocalStorage
-  getProjects() {
-    const data = localStorage.getItem('projects');
-    return data ? JSON.parse(data) : [];
+const Utils = {
+  // Format date for display
+  formatDate(timestamp) {
+    if (!timestamp) return '';
+    const date = new Date(timestamp);
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
   },
 
-  // Save projects to LocalStorage
-  saveProjects(projects) {
-    localStorage.setItem('projects', JSON.stringify(projects));
+  // Format date from YYYY-MM-DD string
+  formatDateString(dateStr) {
+    if (!dateStr) return '';
+    // Append time to prevent timezone issues - use local date
+    const date = new Date(dateStr + 'T12:00:00');
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
   },
 
-  // Generate unique ID
-  generateId() {
-    return Date.now().toString(36) + Math.random().toString(36).substr(2);
+  // Check if date is today
+  isToday(dateStr) {
+    if (!dateStr) return false;
+    const today = new Date();
+    const compareDate = new Date(dateStr + 'T12:00:00');
+    return today.toDateString() === compareDate.toDateString();
   },
 
-  // Create new project
-  createProject(projectData) {
-    const projects = this.getProjects();
-    const newProject = {
-      id: this.generateId(),
-      name: projectData.name || '',
-      phone: projectData.phone || '',
-      address: projectData.address || '',
-      note: projectData.note || '',
-      status: projectData.status || 'Lead',
-      next_action: projectData.next_action || '',
-      next_action_date: projectData.next_action_date || '',
-      created_at: Date.now()
-    };
-    projects.unshift(newProject);
-    this.saveProjects(projects);
-    return newProject;
-  },
-
-  // Update existing project
-  updateProject(id, updates) {
-    const projects = this.getProjects();
-    const index = projects.findIndex(p => p.id === id);
-    if (index !== -1) {
-      projects[index] = { ...projects[index], ...updates };
-      this.saveProjects(projects);
-      return projects[index];
-    }
-    return null;
-  },
-
-  // Delete project
-  deleteProject(id) {
-    const projects = this.getProjects();
-    const filtered = projects.filter(p => p.id !== id);
-    this.saveProjects(filtered);
-  },
-
-  // Get single project
-  getProject(id) {
-    const projects = this.getProjects();
-    return projects.find(p => p.id === id) || null;
+  // Check if date is overdue
+  isOverdue(dateStr) {
+    if (!dateStr) return false;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const compareDate = new Date(dateStr + 'T12:00:00');
+    return compareDate < today;
   }
-};
-
-// ============================================
-// STATUS CONFIGURATION
-// ============================================
-
-const STATUSES = [
-  'Lead',
-  'Visit',
-  'Quote',
-  'Approved',
-  'Scheduled',
-  'In Progress',
-  'Complete'
-];
-
-// Status transitions and actions
-const STATUS_ACTIONS = {
-  'Lead': [
-    { label: 'Visit Job', status: 'Visit', color: 'primary' },
-    { label: 'Create Quote', status: 'Quote', color: 'accent' }
-  ],
-  'Visit': [
-    { label: 'Create Quote', status: 'Quote', color: 'accent' },
-    { label: 'No Go', status: 'Lead', color: 'outline' }
-  ],
-  'Quote': [
-    { label: 'Send Quote', status: 'Approved', color: 'success' },
-    { label: 'Revisit', status: 'Visit', color: 'outline' }
-  ],
-  'Approved': [
-    { label: 'Schedule Job', status: 'Scheduled', color: 'primary' }
-  ],
-  'Scheduled': [
-    { label: 'Start Job', status: 'In Progress', color: 'success' }
-  ],
-  'In Progress': [
-    { label: 'Complete Job', status: 'Complete', color: 'success' },
-    { label: 'Buy Materials', status: 'In Progress', color: 'accent' }
-  ],
-  'Complete': [
-    { label: 'New Job', status: 'Lead', color: 'primary' }
-  ]
 };
 
 // ============================================
@@ -124,6 +53,7 @@ const App = {
   init() {
     this.setupNavigation();
     this.setupFab();
+    this.setupMenu();
     this.setCurrentDate();
     this.registerServiceWorker();
     this.navigateTo('dashboard');
@@ -135,6 +65,21 @@ const App = {
     if (fab) {
       fab.addEventListener('click', () => {
         this.navigateTo('newlead');
+      });
+    }
+  },
+
+  // Setup menu button
+  setupMenu() {
+    const menuBtn = document.getElementById('menuBtn');
+    const menuDropdown = document.getElementById('menuDropdown');
+    if (menuBtn && menuDropdown) {
+      menuBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        menuDropdown.classList.toggle('hidden');
+      });
+      document.addEventListener('click', () => {
+        menuDropdown.classList.add('hidden');
       });
     }
   },
@@ -172,7 +117,20 @@ const App = {
     this.currentScreen = screen;
     this.projectId = projectId;
     this.updateNavButtons();
+    this.updateFabVisibility();
     this.renderScreen();
+  },
+
+  // Update FAB visibility
+  updateFabVisibility() {
+    const fab = document.getElementById('fab');
+    if (!fab) return;
+    
+    if (this.currentScreen === 'newlead' || this.currentScreen === 'detail' || this.currentScreen === 'settings' || this.currentScreen === 'archive') {
+      fab.style.display = 'none';
+    } else {
+      fab.style.display = 'flex';
+    }
   },
 
   // Update navigation button states
@@ -182,8 +140,7 @@ const App = {
       const btnScreen = btn.dataset.screen;
       if (
         (btnScreen === 'dashboard' && this.currentScreen === 'dashboard') ||
-        (btnScreen === 'pipeline' && this.currentScreen === 'pipeline') ||
-        (btnScreen === 'newlead' && this.currentScreen === 'newlead')
+        (btnScreen === 'pipeline' && this.currentScreen === 'pipeline')
       ) {
         btn.classList.add('active');
       } else {
@@ -199,15 +156,24 @@ const App = {
     switch (this.currentScreen) {
       case 'dashboard':
         container.innerHTML = DashboardScreen.render();
+        DashboardScreen.setupSwipeGestures();
         break;
       case 'pipeline':
         container.innerHTML = PipelineScreen.render();
+        DashboardScreen.setupSwipeGestures();
         break;
       case 'newlead':
         container.innerHTML = QuickCaptureScreen.render();
         break;
       case 'detail':
         container.innerHTML = ProjectDetailScreen.render(this.projectId);
+        break;
+      case 'settings':
+        container.innerHTML = SettingsScreen.render();
+        SettingsScreen.setupDragAndDrop();
+        break;
+      case 'archive':
+        container.innerHTML = ArchiveScreen.render();
         break;
       default:
         container.innerHTML = DashboardScreen.render();
@@ -244,16 +210,13 @@ const App = {
       });
     }
 
-    // Action buttons
-    document.querySelectorAll('.action-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const status = btn.dataset.status;
-        const projectId = btn.dataset.projectId;
-        if (status && projectId) {
-          ProjectDetailScreen.updateStatus(projectId, status);
-        }
+    const addStageForm = document.getElementById('addStageForm');
+    if (addStageForm) {
+      addStageForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        SettingsScreen.handleAddStage();
       });
-    });
+    }
 
     // Back buttons
     const backBtn = document.getElementById('backBtn');
@@ -277,54 +240,8 @@ const App = {
 };
 
 // ============================================
-// UTILITY FUNCTIONS
+// INITIALIZATION
 // ============================================
-
-const Utils = {
-  // Format date for display
-  formatDate(timestamp) {
-    if (!timestamp) return '';
-    const date = new Date(timestamp);
-    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-  },
-
-  // Format date from YYYY-MM-DD string
-  formatDateString(dateStr) {
-    if (!dateStr) return '';
-    const date = new Date(dateStr);
-    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-  },
-
-  // Check if date is today
-  isToday(dateStr) {
-    if (!dateStr) return false;
-    const today = new Date().toISOString().split('T')[0];
-    return dateStr === today;
-  },
-
-  // Check if date is overdue
-  isOverdue(dateStr) {
-    if (!dateStr) return false;
-    const today = new Date().toISOString().split('T')[0];
-    return dateStr < today;
-  },
-
-  // Get status class
-  getStatusClass(status) {
-    const statusLower = status.toLowerCase().replace(' ', '-');
-    return `status-${statusLower}`;
-  },
-
-  // Get initials from name
-  getInitials(name) {
-    if (!name) return '?';
-    const parts = name.trim().split(' ');
-    if (parts.length >= 2) {
-      return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
-    }
-    return name.substring(0, 2).toUpperCase();
-  }
-};
 
 // Initialize app when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {

@@ -88,19 +88,19 @@ const QuickCaptureScreen = {
       note: formData.get('note'),
       phone: formData.get('phone') || '',
       address: formData.get('address') || '',
-      status: 'Lead',
+      stageIndex: 0, // Start at first pipeline stage
       next_action: 'Follow up',
       next_action_date: new Date().toISOString().split('T')[0]
     };
 
     // Create the project
-    Storage.createProject(projectData);
+    Store.createProject(projectData);
 
     // Show success feedback
     const submitBtn = form.querySelector('button[type="submit"]');
     const originalText = submitBtn.textContent;
     submitBtn.textContent = 'Saved!';
-    submitBtn.classList.add('bg-[#34C759]');
+    submitBtn.classList.add('bg-green-500');
 
     // Navigate back to dashboard after short delay
     setTimeout(() => {

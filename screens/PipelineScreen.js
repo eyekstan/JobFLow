@@ -9,16 +9,21 @@ const PipelineScreen = {
    * @returns {string} HTML string
    */
   render() {
-    const projects = Storage.getProjects();
+    const projects = Store.getProjects();
+    const stages = Store.getPipelineStages();
+    const archiveIndex = stages.length;
     
-    // Group projects by status
+    // Filter out archived projects
+    const activeProjects = projects.filter(p => p.stageIndex < archiveIndex);
+    
+    // Group projects by stage index
     const grouped = {};
-    STATUSES.forEach(status => {
-      grouped[status] = projects.filter(p => p.status === status);
+    stages.forEach((stage, index) => {
+      grouped[index] = activeProjects.filter(p => p.stageIndex === index);
     });
 
     // Check if pipeline is empty
-    const totalProjects = projects.length;
+    const totalProjects = activeProjects.length;
     
     if (totalProjects === 0) {
       return `
@@ -35,25 +40,25 @@ const PipelineScreen = {
       `;
     }
 
-    // Render each status section
-    const sections = STATUSES.map(status => {
-      const statusProjects = grouped[status];
+    // Render each stage section
+    const sections = stages.map((stage, index) => {
+      const stageProjects = grouped[index];
       
-      if (statusProjects.length === 0) {
-        return ''; // Skip empty sections
+      if (!stageProjects || stageProjects.length === 0) {
+        return ''; // Skip empty stages
       }
 
-      const statusClass = ProjectCard.getStatusClass(status);
+      const stageClass = ProjectCard.getStageClass(index);
       
       return `
         <div class="pipeline-section">
           <div class="pipeline-header">
             <h3 class="font-medium text-gray-800">
-              <span class="${statusClass}">${status}</span>
+              <span class="${stageClass} text-white text-sm font-medium px-3 py-1 rounded-full">Completed: ${stage}</span>
             </h3>
-            <span class="pipeline-count">${statusProjects.length}</span>
+            <span class="pipeline-count">${stageProjects.length}</span>
           </div>
-          ${ProjectCard.renderList(statusProjects, true)}
+          ${ProjectCard.renderList(stageProjects, false)}
         </div>
       `;
     }).join('');

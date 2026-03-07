@@ -38,6 +38,7 @@
   cursor: pointer;
   box-shadow: 0 4px 6px rgba(0,0,0,0.1), 0 2px 4px rgba(0,0,0,0.06);
   transition: box-shadow 0.2s ease, transform 0.1s ease;
+  touch-action: none;
 }
 
 .project-card:hover {
@@ -135,6 +136,16 @@
 
 .action-btn-primary:active {
   background-color: #0056b3;
+}
+
+.action-btn-outline {
+  background-color: white;
+  color: #007AFF;
+  border: 2px solid #007AFF;
+}
+
+.action-btn-outline:active {
+  background-color: #f0f7ff;
 }
 
 /* Screen Header */
@@ -237,6 +248,22 @@
   color: #1f2937;
 }
 
+/* Menu Button */
+#menuBtn {
+  color: #007AFF;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#menuBtn:active {
+  color: #0056b3;
+}
+
 /* Phone Link */
 .phone-link {
   color: #007AFF;
@@ -300,6 +327,45 @@
   font-weight: 600;
   color: #111827;
   margin-top: 2px;
+}
+
+/* Stage Item (Settings) */
+.stage-item {
+  cursor: grab;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.stage-item:active {
+  cursor: grabbing;
+  transform: scale(1.02);
+}
+
+.stage-item.dragging {
+  opacity: 0.5;
+  transform: scale(0.98);
+}
+
+.stage-item.drag-over {
+  border: 2px dashed #007AFF;
+  background: #f0f7ff;
+  transform: translateY(2px);
+}
+
+/* Swipe Indicators */
+.swipe-indicator {
+  z-index: 10;
+}
+
+.swipe-indicator.hidden {
+  display: none;
+}
+
+/* Action Buttons Grid */
+.action-buttons-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 16px 0;
 }
 
 /* Touch optimization */
