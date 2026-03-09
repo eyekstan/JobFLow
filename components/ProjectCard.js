@@ -6,20 +6,73 @@
 const ProjectCard = {
   /**
    * Get stage badge class based on index
+   * Uses traffic light gradient: red -> orange -> amber -> yellow -> green
    */
   getStageClass(index) {
+    const stages = Store.getPipelineStages();
+    const totalStages = stages.length;
+    const lastStageIndex = totalStages - 1;
+    
+    // Colors in order: red, orange, amber, yellow, lime, green
     const colors = [
-      'bg-gray-600',    // Lead
-      'bg-blue-600',    // Call Back
-      'bg-yellow-600',  // Site Visit
-      'bg-orange-600',  // Quote
-      'bg-purple-600', // Schedule
-      'bg-teal-600',   // Materials
-      'bg-green-600',  // Begin Work
-      'bg-indigo-600', // Invoice
-      'bg-gray-800'    // Complete
+      'bg-red-500',      // 0 - red (start)
+      'bg-red-600',
+      'bg-orange-500',   // middle start
+      'bg-orange-600',
+      'bg-amber-500',
+      'bg-amber-600',
+      'bg-yellow-500',
+      'bg-yellow-400',
+      'bg-lime-500',
+      'bg-lime-600',
+      'bg-green-500',    // near end
+      'bg-green-600'     // end
     ];
-    return colors[index % colors.length];
+    
+    // First stage = red, Last stage = green
+    if (index === 0) return 'bg-red-600';
+    if (index === lastStageIndex) return 'bg-green-600';
+    
+    // Map middle stages to gradient
+    const middleIndex = index - 1;  // 0 to (totalStages - 2)
+    const middleTotal = lastStageIndex - 1;  // total middle stages
+    const colorIndex = Math.floor((middleIndex / middleTotal) * (colors.length - 2)) + 1;
+    
+    return colors[Math.min(colorIndex, colors.length - 1)];
+  },
+
+  /**
+   * Get stage badge class for navigation buttons (lighter versions)
+   */
+  getButtonColorClass(index, isNext = true) {
+    const stages = Store.getPipelineStages();
+    const totalStages = stages.length;
+    const lastStageIndex = totalStages - 1;
+    
+    // Lighter colors for buttons on light backgrounds
+    const colors = [
+      'bg-red-100 text-red-700 hover:bg-red-200',
+      'bg-red-100 text-red-700 hover:bg-red-200',
+      'bg-orange-100 text-orange-700 hover:bg-orange-200',
+      'bg-orange-100 text-orange-700 hover:bg-orange-200',
+      'bg-amber-100 text-amber-700 hover:bg-amber-200',
+      'bg-amber-100 text-amber-700 hover:bg-amber-200',
+      'bg-yellow-100 text-yellow-700 hover:bg-yellow-200',
+      'bg-yellow-100 text-yellow-700 hover:bg-yellow-200',
+      'bg-lime-100 text-lime-700 hover:bg-lime-200',
+      'bg-lime-100 text-lime-700 hover:bg-lime-200',
+      'bg-green-100 text-green-700 hover:bg-green-200',
+      'bg-green-100 text-green-700 hover:bg-green-200'
+    ];
+    
+    if (index === 0) return 'bg-red-100 text-red-700 hover:bg-red-200';
+    if (index === lastStageIndex) return 'bg-green-100 text-green-700 hover:bg-green-200';
+    
+    const middleIndex = index - 1;
+    const middleTotal = lastStageIndex - 1;
+    const colorIndex = Math.floor((middleIndex / middleTotal) * (colors.length - 2)) + 1;
+    
+    return colors[Math.min(colorIndex, colors.length - 1)];
   },
 
   /**
@@ -88,18 +141,18 @@ const ProjectCard = {
           <div class="flex gap-2 mt-3 pt-3 border-t border-gray-100">
             ${prevStage ? `
               <button 
-                class="stage-btn flex-1 py-2 px-3 bg-blue-100 text-blue-700 rounded-lg text-sm font-medium hover:bg-blue-200"
-                onclick="event.stopPropagation(); DashboardScreen.moveStage('${project.id}', -1)"
+                class="stage-btn flex-1 py-2 px-3 ${this.getButtonColorClass(project.stageIndex - 1)} rounded-lg text-sm font-medium"
+                onclick="event.stopPropagation(); DashboardScreen.moveStage('${project.id}', -1, event)"
               >
                 ← ${prevStage}
               </button>
             ` : ''}
             ${nextStage ? `
               <button 
-                class="stage-btn flex-1 py-2 px-3 ${isAtFinalEditableStage ? 'bg-purple-100 text-purple-700 hover:bg-purple-200' : 'bg-green-100 text-green-700 hover:bg-green-200'} rounded-lg text-sm font-medium"
-                onclick="event.stopPropagation(); DashboardScreen.moveStage('${project.id}', 1)"
+                class="stage-btn flex-1 py-2 px-3 ${this.getButtonColorClass(project.stageIndex + 1)} rounded-lg text-sm font-medium"
+                onclick="event.stopPropagation(); DashboardScreen.moveStage('${project.id}', 1, event)"
               >
-                ${isAtFinalEditableStage ? '📦 ' : ''}${nextStage}${isAtFinalEditableStage ? ' →' : ' →'}
+                ${nextStage} →
               </button>
             ` : ''}
           </div>

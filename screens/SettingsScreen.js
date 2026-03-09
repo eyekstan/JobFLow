@@ -35,8 +35,8 @@ const SettingsScreen = {
 
         <!-- Pipeline Stages -->
         <div class="mb-6">
-          <h3 class="text-lg font-semibold text-gray-800 mb-4">Pipeline Stages</h3>
-          <p class="text-sm text-gray-500 mb-4">Drag handles to reorder</p>
+          <h3 class="text-lg font-semibold text-gray-800 mb-2">Pipeline Stages</h3>
+          <p class="text-sm text-gray-500 mb-4">Click arrows to reorder</p>
           
           <div id="stagesList" class="space-y-2">
             ${stages.map((stage, index) => this.renderStageItem(stage, index)).join('')}
@@ -53,34 +53,33 @@ const SettingsScreen = {
     const stages = Store.getPipelineStages();
     const isFirst = index === 0;
     const isLast = index === stages.length - 1;
+    const stageClass = ProjectCard.getStageClass(index);
     
     return `
-      <div class="stage-item flex items-center bg-white rounded-xl p-4 shadow-sm border border-gray-100 hover:shadow-md transition-shadow" data-index="${index}" draggable="true">
-        <div class="drag-handle mr-3 text-gray-300 hover:text-gray-500 cursor-grab active:cursor-grabbing p-1">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"/>
-          </svg>
-        </div>
-        <button 
-          class="move-up-btn text-gray-300 hover:text-green-500 p-1 mr-1 ${isFirst ? 'opacity-30 cursor-not-allowed' : ''}" 
-          data-index="${index}"
-          ${isFirst ? 'disabled' : ''}
-          onclick="event.stopPropagation(); SettingsScreen.moveStage(${index}, -1)"
-        >
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/>
-          </svg>
-        </button>
-        <button 
-          class="move-down-btn text-gray-300 hover:text-green-500 p-1 mr-3 ${isLast ? 'opacity-30 cursor-not-allowed' : ''}" 
-          data-index="${index}"
-          ${isLast ? 'disabled' : ''}
-          onclick="event.stopPropagation(); SettingsScreen.moveStage(${index}, 1)"
-        >
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-          </svg>
-        </button>
+      <div class="stage-item flex items-center bg-white rounded-xl p-4 shadow-sm border border-gray-100 hover:shadow-md transition-shadow" data-index="${index}">
+        ${!isFirst ? `
+          <button 
+            class="move-up-btn text-gray-400 hover:text-green-600 p-1 mr-1" 
+            data-index="${index}"
+            onclick="SettingsScreen.moveStage(${index}, -1)"
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/>
+            </svg>
+          </button>
+        ` : '<div class="w-6"></div>'}
+        ${!isLast ? `
+          <button 
+            class="move-down-btn text-gray-400 hover:text-green-600 p-1" 
+            data-index="${index}"
+            onclick="SettingsScreen.moveStage(${index}, 1)"
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+            </svg>
+          </button>
+        ` : '<div class="w-6"></div>'}
+        <span class="${stageClass} w-4 h-4 rounded-full mr-3 shrink-0"></span>
         <span class="flex-1 font-medium text-gray-800 text-lg">${stage}</span>
         <span class="text-gray-300 mr-3 text-sm">${index + 1}</span>
         <button class="delete-stage-btn text-gray-300 hover:text-red-500 p-2 rounded-lg hover:bg-red-50 transition-colors" data-index="${index}">

@@ -7,7 +7,7 @@ const DashboardScreen = {
   /**
    * project Move to different stage
    */
-  moveStage(projectId, direction) {
+  moveStage(projectId, direction, event) {
     const project = Store.getProject(projectId);
     if (!project) return;
     
@@ -17,9 +17,50 @@ const DashboardScreen = {
     const maxIndex = archiveIndex; // Can move to Archive (which is at index = stages.length)
     
     if (newIndex >= 0 && newIndex <= maxIndex) {
+      // Show animation only when moving forward (direction > 0) and actually progressing
+      if (direction > 0 && newIndex > project.stageIndex) {
+        Store.trackCompletion();
+        this.showCompletionAnimation(event);
+      }
+      
       Store.updateProject(projectId, { stageIndex: newIndex });
       App.renderScreen();
     }
+  },
+
+  /**
+   * Show completion animation near the clicked button
+   */
+  showCompletionAnimation(event) {
+    const existing = document.getElementById('completionOverlay');
+    if (existing) existing.remove();
+
+    // Get button position if event was passed
+    let x = window.innerWidth / 2;
+    let y = window.innerHeight / 2;
+    
+    if (event && event.target) {
+      const rect = event.target.getBoundingClientRect();
+      x = rect.left + rect.width / 2;
+      y = rect.top + 8; // Slightly inside the button
+    }
+
+    const overlay = document.createElement('div');
+    overlay.id = 'completionOverlay';
+    overlay.className = 'completion-animation';
+    overlay.style.left = x + 'px';
+    overlay.style.top = y + 'px';
+    overlay.innerHTML = `
+      <svg viewBox="0 0 52 52">
+        <circle cx="26" cy="26" r="20"/>
+        <path d="M14 27l7 7 16-16" stroke-dasharray="50" stroke-dashoffset="0">
+          <animate attributeName="stroke-dashoffset" from="50" to="0" dur="0.4s" fill="freeze"/>
+        </path>
+      </svg>
+    `;
+    document.body.appendChild(overlay);
+    
+    setTimeout(() => overlay.remove(), 1000);
   },
 
   /**
@@ -31,6 +72,9 @@ const DashboardScreen = {
     const stages = Store.getPipelineStages();
     const archiveIndex = stages.length;
     const lastStageIndex = stages.length - 1; // Last editable stage
+    
+    // Get today's completion count
+    const todayCompletions = Store.getTodayCompletionCount();
     
     // Filter out archived projects
     const activeProjects = projects.filter(p => p.stageIndex < archiveIndex);
@@ -63,6 +107,18 @@ const DashboardScreen = {
     });
 
     return `
+      <!-- Stats Header -->
+      <div class="stats-header">
+        <div class="stats-item">
+          <div class="stats-number">${todayCompletions}</div>
+          <div class="stats-label">Steps Completed Today</div>
+        </div>
+        <div class="stats-item">
+          <div class="stats-number">${activeProjects.length}</div>
+          <div class="stats-label">Active Projects</div>
+        </div>
+      </div>
+
       <!-- Today's Actions Section -->
       ${todayActions.length > 0 ? `
         <div class="mb-8">

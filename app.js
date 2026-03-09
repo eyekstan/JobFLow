@@ -54,6 +54,7 @@ const App = {
     this.setupNavigation();
     this.setupFab();
     this.setupMenu();
+    this.setupSearch();
     this.setCurrentDate();
     this.registerServiceWorker();
     this.navigateTo('dashboard');
@@ -82,6 +83,119 @@ const App = {
         menuDropdown.classList.add('hidden');
       });
     }
+  },
+
+  // Setup search functionality
+  setupSearch() {
+    const searchBtn = document.getElementById('searchBtn');
+    const closeSearchBtn = document.getElementById('closeSearchBtn');
+    const searchOverlay = document.getElementById('searchOverlay');
+    const searchInput = document.getElementById('searchInput');
+    const searchResults = document.getElementById('searchResults');
+
+    if (!searchBtn || !searchOverlay) return;
+
+    // Open search
+    searchBtn.addEventListener('click', () => {
+      searchOverlay.classList.remove('hidden');
+      searchInput.focus();
+    });
+
+    // Close search
+    closeSearchBtn.addEventListener('click', () => {
+      searchOverlay.classList.add('hidden');
+    });
+
+    // Close search and navigate
+    this.closeSearchAndNavigate = (screen) => {
+      searchOverlay.classList.add('hidden');
+      searchInput.value = '';
+      this.navigateTo(screen);
+    };
+
+    // Search on input
+    let searchTimeout;
+    searchInput.addEventListener('input', (e) => {
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(() => {
+        this.performSearch(e.target.value, searchResults);
+      }, 150);
+    });
+
+    // Close on escape
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !searchOverlay.classList.contains('hidden')) {
+        searchOverlay.classList.add('hidden');
+      }
+    });
+  },
+
+  // Perform search and render results
+  performSearch(query, resultsContainer) {
+    if (!query || query.trim() === '') {
+      resultsContainer.innerHTML = '<p class="text-gray-400 text-center py-8">Type to search...</p>';
+      return;
+    }
+
+    const results = Store.searchProjects(query);
+    const stages = Store.getPipelineStages();
+    const archiveIndex = stages.length;
+
+    if (results.length === 0) {
+      resultsContainer.innerHTML = '<p class="text-gray-400 text-center py-8">No projects found</p>';
+      return;
+    }
+
+    // Group results
+    const activeResults = results.filter(p => p.stageIndex < archiveIndex);
+    const archivedResults = results.filter(p => p.stageIndex >= archiveIndex);
+
+    let html = '';
+
+    // Active projects
+    if (activeResults.length > 0) {
+      html += '<h3 class="section-header text-blue-600">Active Projects (' + activeResults.length + ')</h3>';
+      activeResults.forEach(project => {
+        const stageName = Store.getStageName(project.stageIndex);
+        const stageClass = ProjectCard.getStageClass(project.stageIndex);
+        html += this.renderSearchResult(project, stageName, stageClass);
+      });
+    }
+
+    // Archived projects
+    if (archivedResults.length > 0) {
+      if (html) html += '<hr class="my-4">';
+      html += '<h3 class="section-header text-gray-500">Archived (' + archivedResults.length + ')</h3>';
+      archivedResults.forEach(project => {
+        html += this.renderSearchResult(project, 'Archived', 'bg-gray-500');
+      });
+    }
+
+    resultsContainer.innerHTML = html;
+
+    // Add click handlers
+    resultsContainer.querySelectorAll('.search-result-card').forEach(card => {
+      card.addEventListener('click', () => {
+        document.getElementById('searchOverlay').classList.add('hidden');
+        document.getElementById('searchInput').value = '';
+        this.navigateTo('detail', card.dataset.projectId);
+      });
+    });
+  },
+
+  // Render a single search result
+  renderSearchResult(project, stageName, stageClass) {
+    return `
+      <div class="search-result-card bg-white rounded-xl p-4 mb-3 shadow-sm border border-gray-100" data-project-id="${project.id}">
+        <div class="flex items-center justify-between mb-2">
+          <span class="font-bold text-gray-900">${project.name || 'Unnamed Project'}</span>
+          <span class="${stageClass} text-white text-xs font-medium px-2 py-1 rounded-full">${stageName}</span>
+        </div>
+        ${project.note ? `<p class="text-gray-600 text-sm mb-1">${project.note}</p>` : ''}
+        ${project.phone ? `<p class="text-gray-500 text-sm">📞 ${project.phone}</p>` : ''}
+        ${project.address ? `<p class="text-gray-500 text-sm">📍 ${project.address}</p>` : ''}
+      </div>
+    `;
   },
 
   // Setup bottom navigation
@@ -114,19 +228,51 @@ const App = {
 
   // Navigate to a screen
   navigateTo(screen, projectId = null) {
+    // Close search overlay if open
+    const searchOverlay = document.getElementById('searchOverlay');
+    if (searchOverlay) {
+      searchOverlay.classList.add('hidden');
+      document.getElementById('searchInput').value = '';
+    }
+    
+    // Track previous screen and its ID for back navigation
+    if (screen !== this.currentScreen) {
+      this.previousScreen = this.currentScreen;
+      this.previousId = this.projectId;
+    }
+    
     this.currentScreen = screen;
     this.projectId = projectId;
     this.updateNavButtons();
     this.updateFabVisibility();
     this.renderScreen();
   },
+  
+  // Go back to previous screen
+  goBack() {
+    if (this.previousScreen) {
+      const goBackId = (this.previousScreen === 'detail' || this.previousScreen === 'customerDetail') 
+        ? this.previousId 
+        : null;
+      this.navigateTo(this.previousScreen, goBackId);
+    } else {
+      this.navigateTo('dashboard');
+    }
+  },
 
   // Update FAB visibility
   updateFabVisibility() {
     const fab = document.getElementById('fab');
+    const searchOverlay = document.getElementById('searchOverlay');
     if (!fab) return;
     
-    if (this.currentScreen === 'newlead' || this.currentScreen === 'detail' || this.currentScreen === 'settings' || this.currentScreen === 'archive') {
+    // Hide FAB when search is open
+    if (searchOverlay && !searchOverlay.classList.contains('hidden')) {
+      fab.style.display = 'none';
+      return;
+    }
+    
+    if (this.currentScreen === 'newlead' || this.currentScreen === 'detail' || this.currentScreen === 'settings' || this.currentScreen === 'archive' || this.currentScreen === 'customers' || this.currentScreen === 'customerDetail') {
       fab.style.display = 'none';
     } else {
       fab.style.display = 'flex';
@@ -170,10 +316,15 @@ const App = {
         break;
       case 'settings':
         container.innerHTML = SettingsScreen.render();
-        SettingsScreen.setupDragAndDrop();
         break;
       case 'archive':
         container.innerHTML = ArchiveScreen.render();
+        break;
+      case 'customers':
+        container.innerHTML = CustomersScreen.render();
+        break;
+      case 'customerDetail':
+        container.innerHTML = CustomerDetailScreen.render(this.projectId);
         break;
       default:
         container.innerHTML = DashboardScreen.render();
