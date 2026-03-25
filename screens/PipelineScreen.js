@@ -80,12 +80,14 @@ const PipelineScreen = {
       }
 
       const stageClass = ProjectCard.getStageClass(index);
+      const stageHexColor = ProjectCard.getStageHexColor(index);
       
       return `
         <div class="pipeline-section">
           <div class="pipeline-header">
-            <h3 class="font-medium text-gray-800">
-              <span class="${stageClass} text-white text-sm font-medium px-3 py-1 rounded-full">Completed: ${stage}</span>
+            <h3 class="font-semibold text-gray-700 flex items-center gap-2">
+              <span style="width:10px;height:10px;border-radius:50%;background:${stageHexColor};display:inline-block;flex-shrink:0;"></span>
+              ${stage}
             </h3>
             <span class="pipeline-count">${stageProjects.length}</span>
           </div>

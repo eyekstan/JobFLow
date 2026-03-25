@@ -71,59 +71,97 @@ const DashboardScreen = {
     const projects = Store.getProjects();
     const stages = Store.getPipelineStages();
     const archiveIndex = stages.length;
-    const lastStageIndex = stages.length - 1; // Last editable stage
-    
-    // Get today's completion count
+    const lastStageIndex = stages.length - 1;
+
     const todayCompletions = Store.getTodayCompletionCount();
-    
-    // Filter out archived projects
+    const currencySymbol = Store.getCurrencySymbol();
     const activeProjects = projects.filter(p => p.stageIndex < archiveIndex);
-    
-    // Get today's actions (overdue or today) - from active projects only
-    let todayActions = activeProjects.filter(p => 
-      p.stageIndex !== lastStageIndex && 
+    const archivedProjects = projects.filter(p => p.stageIndex >= archiveIndex);
+
+    // Won / Lost counts
+    const wonCount  = archivedProjects.filter(p => p.outcome === 'won').length;
+    const lostCount = archivedProjects.filter(p => p.outcome === 'lost').length;
+
+    const pipelineValue = activeProjects.reduce((sum, p) => sum + (parseFloat(p.value) || 0), 0);
+    const valueDisplay = `${currencySymbol}${pipelineValue.toLocaleString()}`;
+
+    // Data warning banner (shown once)
+    const showWarning = !Store.hasSeenDataWarning();
+    const warningBanner = showWarning ? `
+      <div class="data-warning-banner" id="dataWarningBanner">
+        <div class="data-warning-icon">💾</div>
+        <div class="data-warning-text">
+          <strong>Your data is stored on this device.</strong>
+          Export a backup in Settings so you never lose your jobs.
+        </div>
+        <button class="data-warning-close" onclick="Store.markDataWarningSeen(); document.getElementById('dataWarningBanner').remove()">✕</button>
+      </div>
+    ` : '';
+
+    let todayActions = activeProjects.filter(p =>
+      p.stageIndex !== lastStageIndex &&
       (Utils.isToday(p.next_action_date) || Utils.isOverdue(p.next_action_date))
     );
-    
-    // Sort: overdue first (by date ascending), then today
+
     todayActions.sort((a, b) => {
       const aDate = a.next_action_date || '9999-99-99';
       const bDate = b.next_action_date || '9999-99-99';
       const aOverdue = Utils.isOverdue(a.next_action_date);
       const bOverdue = Utils.isOverdue(b.next_action_date);
-      const aToday = Utils.isToday(a.next_action_date);
-      const bToday = Utils.isToday(b.next_action_date);
-      
-      // Overdue items first
+      const aToday   = Utils.isToday(a.next_action_date);
+      const bToday   = Utils.isToday(b.next_action_date);
       if (aOverdue && !bOverdue) return -1;
       if (!aOverdue && bOverdue) return 1;
       if (aOverdue && bOverdue) return aDate.localeCompare(bDate);
-      
-      // Then today
       if (aToday && !bToday) return -1;
       if (!aToday && bToday) return 1;
-      
       return 0;
     });
 
     return `
-      <!-- Stats Header -->
-      <div class="stats-header">
+      ${warningBanner}
+
+      <!-- Stats -->
+      <div class="stats-header" style="grid-template-columns:1fr 1fr 1fr;">
         <div class="stats-item">
-          <div class="stats-number">${todayCompletions}</div>
-          <div class="stats-label">Steps Completed Today</div>
+          <div class="stats-number" style="font-size:1.75rem;">${todayCompletions}</div>
+          <div class="stats-label">Done Today</div>
         </div>
         <div class="stats-item">
-          <div class="stats-number">${activeProjects.length}</div>
-          <div class="stats-label">Active Projects</div>
+          <div class="stats-number" style="font-size:1.75rem;">${activeProjects.length}</div>
+          <div class="stats-label">Active Jobs</div>
+        </div>
+        <div class="stats-item">
+          <div class="stats-number" style="font-size:1.4rem;color:#059669;">${valueDisplay}</div>
+          <div class="stats-label">Pipeline</div>
         </div>
       </div>
 
-      <!-- Today's Actions Section -->
+      <!-- Won / Lost row -->
+      ${(wonCount + lostCount) > 0 ? `
+        <div class="won-lost-row">
+          <div class="won-lost-item">
+            <span class="won-lost-count won">${wonCount}</span>
+            <span class="won-lost-label">Won</span>
+          </div>
+          <div class="won-lost-divider"></div>
+          <div class="won-lost-item">
+            <span class="won-lost-count lost">${lostCount}</span>
+            <span class="won-lost-label">Lost</span>
+          </div>
+          <div class="won-lost-divider"></div>
+          <div class="won-lost-item">
+            <span class="won-lost-count rate">${Math.round((wonCount / (wonCount + lostCount)) * 100)}%</span>
+            <span class="won-lost-label">Win Rate</span>
+          </div>
+        </div>
+      ` : ''}
+
+      <!-- Today's Actions -->
       ${todayActions.length > 0 ? `
         <div class="mb-8">
           <div class="flex items-center gap-3 mb-4">
-            <svg class="w-6 h-6 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-5 h-5 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
             </svg>
             <h2 class="section-header mb-0 text-orange-500">Today's Actions</h2>
@@ -132,22 +170,22 @@ const DashboardScreen = {
         </div>
       ` : ''}
 
-      <!-- Active Projects Section -->
+      <!-- Active Jobs -->
       <div class="mb-4 pb-20">
         <div class="flex items-center gap-3 mb-4">
-          <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
           </svg>
-          <h2 class="section-header mb-0 text-blue-600">Active Projects (${activeProjects.length})</h2>
+          <h2 class="section-header mb-0 text-blue-600">Active Jobs (${activeProjects.length})</h2>
         </div>
-        ${activeProjects.length > 0 
+        ${activeProjects.length > 0
           ? ProjectCard.renderList(activeProjects, true)
           : `<div class="empty-state">
-              <svg class="w-24 h-24 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="w-20 h-20 mx-auto text-gray-200 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
               </svg>
-              <p class="text-xl">No active projects</p>
-              <p class="text-lg mt-2">Tap + to add your first lead</p>
+              <p class="text-lg font-semibold text-gray-400">No active jobs yet</p>
+              <p class="text-sm text-gray-400 mt-1">Tap <strong>+</strong> to add your first lead</p>
             </div>`
         }
       </div>

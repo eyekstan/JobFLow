@@ -12,14 +12,15 @@ const QuickCaptureScreen = {
    */
   render() {
     this.selectedCustomerId = null;
+    const currencySymbol = Store.getCurrencySymbol();
     return `
       <div class="max-w-lg mx-auto pb-20">
         <h2 class="screen-header">New Lead</h2>
         
         <form id="quickCaptureForm" class="space-y-6">
-          <!-- Customer Selection -->
+          <!-- Contact Selection -->
           <div>
-            <label class="form-label">Customer Name *</label>
+            <label class="form-label">Contact *</label>
             <div class="relative">
               <input 
                 type="text" 
@@ -36,57 +37,40 @@ const QuickCaptureScreen = {
             <input type="hidden" id="customerId" name="customerId" value="">
           </div>
 
-          <!-- Contact Fields -->
+          <!-- Phone -->
           <div>
             <label class="form-label" for="phone">Phone</label>
-            <input 
-              type="tel" 
-              id="phone" 
-              name="phone" 
-              class="form-input form-input-lg" 
-              placeholder="555-555-5555"
-              autocomplete="tel"
-            >
+            <input type="tel" id="phone" name="phone" class="form-input form-input-lg" placeholder="555-555-5555" autocomplete="tel">
           </div>
 
+          <!-- Address -->
           <div>
             <label class="form-label" for="address">Address</label>
-            <input 
-              type="text" 
-              id="address" 
-              name="address" 
-              class="form-input form-input-lg" 
-              placeholder="123 Main St"
-              autocomplete="street-address"
-            >
+            <input type="text" id="address" name="address" class="form-input form-input-lg" placeholder="123 Main St" autocomplete="street-address">
           </div>
 
-          <!-- Project Name -->
+          <!-- Project Description -->
           <div>
-            <label class="form-label" for="note">Project Name *</label>
-            <input 
-              type="text" 
-              id="note" 
-              name="note" 
-              class="form-input form-input-lg" 
-              placeholder="Replace porch railing"
-              required
-            >
+            <label class="form-label" for="note">Project *</label>
+            <input type="text" id="note" name="note" class="form-input form-input-lg" placeholder="e.g. Replace porch railing" required>
+          </div>
+
+          <!-- Job Value -->
+          <div>
+            <label class="form-label" for="value">Job Value</label>
+            <div class="relative">
+              <span class="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 font-semibold text-lg">${currencySymbol}</span>
+              <input type="number" id="value" name="value" class="form-input form-input-lg" style="padding-left: 2.5rem;" placeholder="0" min="0" step="0.01">
+            </div>
           </div>
 
           <!-- Notes -->
           <div>
             <label class="form-label" for="notes">Notes (Optional)</label>
-            <textarea 
-              id="notes" 
-              name="notes" 
-              class="form-input form-input-lg" 
-              placeholder="Additional details..."
-              rows="2"
-            ></textarea>
+            <textarea id="notes" name="notes" class="form-input form-input-lg" placeholder="Additional details..." rows="2"></textarea>
           </div>
 
-          <!-- Submit Button -->
+          <!-- Submit -->
           <div class="pt-8">
             <button type="submit" class="action-btn action-btn-primary action-btn-lg">
               Save Lead
@@ -101,7 +85,6 @@ const QuickCaptureScreen = {
    * Search customers and show suggestions
    */
   searchCustomers(query) {
-    console.log('Searching for:', query);
     const suggestionsEl = document.getElementById('customerSuggestions');
     const customerIdInput = document.getElementById('customerId');
     
@@ -111,7 +94,6 @@ const QuickCaptureScreen = {
     }
 
     const matches = Store.searchCustomers(query);
-    console.log('Matches found:', matches);
     const nameInput = document.getElementById('customerName');
     const exactMatch = matches.find(c => c.name.toLowerCase() === query.toLowerCase());
 
@@ -208,7 +190,6 @@ const QuickCaptureScreen = {
    * Handle form submission
    */
   handleSubmit() {
-    console.log('Form submitted');
     const form = document.getElementById('quickCaptureForm');
     
     // Get values directly from inputs
@@ -225,16 +206,14 @@ const QuickCaptureScreen = {
     const address = addressInput ? addressInput.value : '';
     const note = noteInput ? noteInput.value : '';
     const notes = notesInput ? notesInput.value : '';
-
-    console.log('Form values:', { customerId, name, phone, address, note });
+    const valueInput = document.getElementById('value');
+    const value = valueInput ? parseFloat(valueInput.value) || 0 : 0;
 
     let finalCustomerId = customerId;
 
     // If no customer selected but name entered, create new customer
     if (!finalCustomerId && name) {
-      console.log('Creating new customer:', name);
       const customer = Store.createCustomer({ name, phone, address });
-      console.log('Customer created:', customer);
       finalCustomerId = customer.id;
     } else if (finalCustomerId) {
       // Update existing customer with any changed info
@@ -248,12 +227,11 @@ const QuickCaptureScreen = {
       address: address,
       note: note,
       notes: notes,
+      value: value,
       stageIndex: 0,
       next_action: 'Follow up',
       next_action_date: new Date().toISOString().split('T')[0]
     };
-
-    console.log('Creating project:', projectData);
 
     // Create the project
     Store.createProject(projectData);

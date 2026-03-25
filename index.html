@@ -1,130 +1,139 @@
-/**
- * ArchiveScreen
- * Display archived projects with Won/Lost badges
- */
-
-const ArchiveScreen = {
-  render() {
-    const allProjects = Store.getProjects();
-    const archiveIndex = Store.getPipelineStages().length;
-    const archivedProjects = allProjects.filter(p => p.stageIndex === archiveIndex);
-    const wonProjects  = archivedProjects.filter(p => p.outcome === 'won');
-    const lostProjects = archivedProjects.filter(p => p.outcome === 'lost');
-    const otherProjects = archivedProjects.filter(p => !p.outcome);
-    const currency = Store.getCurrencySymbol();
-    const wonValue = wonProjects.reduce((s, p) => s + (parseFloat(p.value) || 0), 0);
-
-    return `
-      <div class="max-w-lg mx-auto pb-20">
-        <h2 class="screen-header">Archive</h2>
-
-        ${archivedProjects.length > 0 ? `
-          <!-- Summary strip -->
-          ${(wonProjects.length + lostProjects.length) > 0 ? `
-            <div class="archive-summary">
-              <div class="archive-summary-item">
-                <span class="archive-summary-num won">${wonProjects.length}</span>
-                <span class="archive-summary-label">Won</span>
-              </div>
-              <div class="archive-summary-divider"></div>
-              <div class="archive-summary-item">
-                <span class="archive-summary-num lost">${lostProjects.length}</span>
-                <span class="archive-summary-label">Lost</span>
-              </div>
-              ${wonValue > 0 ? `
-                <div class="archive-summary-divider"></div>
-                <div class="archive-summary-item">
-                  <span class="archive-summary-num value">${currency}${wonValue.toLocaleString()}</span>
-                  <span class="archive-summary-label">Won Value</span>
-                </div>
-              ` : ''}
-            </div>
-          ` : ''}
-
-          <div class="space-y-3">
-            ${archivedProjects.map(p => this.renderArchivedCard(p, currency)).join('')}
-          </div>
-        ` : `
-          <div class="empty-state">
-            <svg class="w-20 h-20 mx-auto text-gray-200 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/>
-            </svg>
-            <p class="text-lg font-semibold text-gray-400">No archived jobs yet</p>
-            <p class="text-sm text-gray-400 mt-1">Archive jobs from the project detail screen</p>
-          </div>
-        `}
-      </div>
-    `;
-  },
-
-  renderArchivedCard(project, currency) {
-    const outcomeLabel = project.outcome === 'won'
-      ? `<span class="outcome-badge won">🏆 Won</span>`
-      : project.outcome === 'lost'
-        ? `<span class="outcome-badge lost">✕ Lost</span>`
-        : `<span class="outcome-badge other">Archived</span>`;
-
-    return `
-      <div class="project-card" onclick="App.navigateTo('detail', '${project.id}')">
-        <div class="flex items-start justify-between mb-3">
-          <div class="flex-1 min-w-0 pr-2">
-            <h3 class="font-semibold text-gray-900 truncate">${project.name || 'Unnamed Project'}</h3>
-            <p class="text-gray-500 text-sm mt-0.5">${project.note || ''}</p>
-            ${project.value ? `<span class="card-value-badge">${currency}${Number(project.value).toLocaleString()}</span>` : ''}
-          </div>
-          ${outcomeLabel}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#007AFF">
+  <meta name="description" content="JobFlow - Fast job lead and project management for contractors">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="JobFlow">
+  <title>JobFlow</title>
+  
+  <!-- Google Fonts - Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- TailwindCSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="styles.css">
+  
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="manifest.json">
+  
+  <!-- Apple Touch Icon -->
+  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%23007AFF' width='100' height='100' rx='20'/><text x='50' y='65' font-size='50' text-anchor='middle' fill='white' font-family='system-ui'>J</text></svg>">
+</head>
+<body class="bg-gray-50 min-h-screen pb-16">
+  <!-- App Container -->
+  <div id="app" class="min-h-screen">
+    <!-- Header -->
+    <header class="bg-white text-blue-600 px-5 py-4 shadow-md sticky top-0 z-50 border-b border-gray-200">
+      <div class="flex items-center justify-between">
+        <h1 class="text-2xl font-bold">JobFlow</h1>
+        <div class="absolute left-1/2 transform -translate-x-1/2">
+          <span class="text-base text-gray-500" id="currentDate"></span>
         </div>
-        <div style="border-top:1px solid #f3f4f6;padding-top:10px;">
-          <button
-            class="action-btn bg-blue-50 text-blue-600 border border-blue-200"
-            style="height:38px;font-size:13px;"
-            onclick="event.stopPropagation(); ArchiveScreen.restoreProject('${project.id}')">
-            ← Restore to Pipeline
+        <div class="flex items-center gap-3">
+          <button id="searchBtn" class="p-2">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+            </svg>
+          </button>
+          <button id="menuBtn" class="p-2">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+            </svg>
           </button>
         </div>
       </div>
-    `;
-  },
+    </header>
 
-  restoreProject(projectId) {
-    const stages = Store.getPipelineStages();
+    <!-- Menu Dropdown -->
+    <div id="menuDropdown" class="hidden fixed top-16 right-4 bg-white rounded-lg shadow-lg border border-gray-200 z-50 py-2 min-w-32">
+      <button onclick="App.navigateTo('customers'); document.getElementById('menuDropdown').classList.add('hidden');" class="w-full px-4 py-3 text-left text-base font-medium text-gray-700 hover:bg-gray-100">Customers</button>
+      <button onclick="App.navigateTo('archive'); document.getElementById('menuDropdown').classList.add('hidden');" class="w-full px-4 py-3 text-left text-base font-medium text-gray-700 hover:bg-gray-100">Archive</button>
+      <button onclick="App.navigateTo('settings'); document.getElementById('menuDropdown').classList.add('hidden');" class="w-full px-4 py-3 text-left text-base font-medium text-gray-700 hover:bg-gray-100">Settings</button>
+    </div>
 
-    // Build modal with stage options
-    const existing = document.getElementById('restoreModal');
-    if (existing) existing.remove();
-
-    const modal = document.createElement('div');
-    modal.id = 'restoreModal';
-    modal.className = 'won-lost-modal-overlay';
-    modal.innerHTML = `
-      <div class="won-lost-modal">
-        <h3 class="won-lost-modal-title">Restore to which stage?</h3>
-        <p class="won-lost-modal-body">Pick where this job should re-enter the pipeline.</p>
-        <div class="restore-stage-list">
-          ${stages.map((stage, i) => `
-            <button
-              class="restore-stage-btn"
-              style="border-left: 4px solid ${ProjectCard.getStageHexColor(i)};"
-              onclick="ArchiveScreen.confirmRestore('${projectId}', ${i})">
-              <span class="restore-stage-num">${i + 1}</span>
-              ${stage}
-            </button>
-          `).join('')}
+    <!-- Search Overlay -->
+    <div id="searchOverlay" class="hidden fixed inset-0 bg-white z-50 overflow-y-auto">
+      <div class="p-4">
+        <div class="flex items-center gap-3 mb-4">
+          <button id="closeSearchBtn" class="p-2">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+          </button>
+          <input 
+            type="text" 
+            id="searchInput" 
+            class="flex-1 text-xl p-3 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none" 
+            placeholder="Search projects..."
+            autocomplete="off"
+          >
         </div>
-        <button class="won-lost-modal-cancel" onclick="document.getElementById('restoreModal').remove()">Cancel</button>
+        <div id="searchResults"></div>
       </div>
-    `;
-    modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
-    document.body.appendChild(modal);
-    setTimeout(() => modal.classList.add('visible'), 20);
-  },
+      <!-- Bottom Navigation for Search -->
+      <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-50">
+        <div class="flex h-16">
+          <button class="nav-btn flex-1 flex items-center justify-center h-full text-base font-medium" data-screen="pipeline" onclick="App.closeSearchAndNavigate('pipeline')">
+            Pipeline
+          </button>
+          <button class="nav-btn flex-1 flex items-center justify-center h-full text-base font-medium" data-screen="dashboard" onclick="App.closeSearchAndNavigate('dashboard')">
+            Dashboard
+          </button>
+        </div>
+      </nav>
+    </div>
 
-  confirmRestore(projectId, stageIndex) {
-    const modal = document.getElementById('restoreModal');
-    if (modal) modal.remove();
-    Store.updateProject(projectId, { stageIndex, outcome: null });
-    App.navigateTo('archive');
-  },
-};
+    <!-- Main Content Area -->
+    <main id="screen-container" class="p-4">
+      <!-- Screens render here -->
+    </main>
 
-window.ArchiveScreen = ArchiveScreen;
+    <!-- Bottom Navigation -->
+    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-50">
+      <div class="flex h-16">
+        <button class="nav-btn flex-1 flex items-center justify-center h-full text-base font-medium" data-screen="pipeline">
+          Pipeline
+        </button>
+        <button class="nav-btn flex-1 flex items-center justify-center h-full text-base font-medium" data-screen="dashboard">
+          Dashboard
+        </button>
+      </div>
+    </nav>
+
+    <!-- Floating New Lead Button -->
+    <button id="fab" class="fixed bottom-20 right-4 w-18 h-18 rounded-full bg-[#007AFF] text-white flex items-center justify-center shadow-lg z-40" style="width: 72px; height: 72px;" data-screen="newlead">
+      <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Load Components and Screens (must load before app.js) -->
+  <script src="lib/photodb.js"></script>
+  <script src="lib/store.js"></script>
+  <script src="components/ProjectCard.js"></script>
+  <script src="components/ActionButton.js"></script>
+  <script src="screens/OnboardingScreen.js"></script>
+  <script src="screens/DashboardScreen.js"></script>
+  <script src="screens/QuickCaptureScreen.js"></script>
+  <script src="screens/ProjectDetailScreen.js"></script>
+  <script src="screens/PipelineScreen.js"></script>
+  <!-- ESTIMATE FEATURE - remove this line to disable -->
+  <script src="screens/EstimateScreen.js"></script>
+  <script src="screens/SettingsScreen.js"></script>
+  <script src="screens/ArchiveScreen.js"></script>
+  <script src="screens/CustomersScreen.js"></script>
+  <script src="screens/CustomerDetailScreen.js"></script>
+  
+  <!-- Load Main App -->
+  <script src="app.js"></script>
+</body>
+</html>
