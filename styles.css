@@ -1,452 +1,139 @@
-/* JobFlow Custom Styles - Material Design */
-
-/* Base font */
-* {
-  font-family: 'Roboto', sans-serif;
-  box-sizing: border-box;
-}
-
-/* Status Badge Colors - Filled Material Style */
-.status-badge {
-  display: inline-flex;
-  align-items: center;
-  padding: 4px 10px;
-  border-radius: 9999px;
-  font-size: 14px;
-  font-weight: 500;
-}
-
-.status-lead { background-color: #4b5563; color: white; }
-.status-visit { background-color: #2563eb; color: white; }
-.status-quote { background-color: #ca8a04; color: white; }
-.status-approved { background-color: #0d9488; color: white; }
-.status-scheduled { background-color: #9333ea; color: white; }
-.status-in-progress { background-color: #16a34a; color: white; }
-.status-complete { background-color: #1f2937; color: white; }
-
-/* Today's Action Card Highlight */
-.today-action {
-  border-left: 4px solid #f97316;
-}
-
-/* Project Card - Strong Shadow and Rounded Corners */
-.project-card {
-  background: white;
-  border-radius: 16px;
-  margin-bottom: 20px;
-  padding: 16px;
-  cursor: pointer;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1), 0 2px 4px rgba(0,0,0,0.06);
-  transition: box-shadow 0.2s ease, transform 0.1s ease;
-  touch-action: none;
-}
-
-.project-card:hover {
-  box-shadow: 0 10px 15px rgba(0,0,0,0.1), 0 4px 6px rgba(0,0,0,0.05);
-}
-
-.project-card:active {
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  transform: scale(0.98);
-  transition: transform 0.05s ease;
-}
-
-.project-card.today-action {
-  border-left: 4px solid #f97316;
-}
-
-/* Form Inputs - Full Border Style */
-.form-input {
-  width: 100%;
-  padding: 12px 16px;
-  border-radius: 8px;
-  border: 2px solid #d1d5db;
-  font-size: 16px;
-  transition: border-color 0.2s, box-shadow 0.2s;
-  background: white;
-  box-sizing: border-box;
-}
-
-.form-input:focus {
-  outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
-}
-
-.form-input::placeholder {
-  color: #9ca3af;
-}
-
-/* Large Form Inputs */
-.form-input-lg {
-  padding: 20px 20px;
-  font-size: 20px;
-  border-radius: 12px;
-}
-
-.form-input-lg::placeholder {
-  color: #9ca3af;
-}
-
-/* Large Form Labels */
-.form-label {
-  display: block;
-  font-size: 18px;
-  font-weight: 500;
-  color: #374151;
-  margin-bottom: 8px;
-}
-
-/* Action Buttons */
-.action-btn {
-  width: 100%;
-  padding: 12px 16px;
-  border-radius: 8px;
-  font-size: 16px;
-  font-weight: 500;
-  transition: all 0.15s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  min-height: 48px;
-  box-sizing: border-box;
-  border: none;
-  cursor: pointer;
-}
-
-.action-btn:active {
-  transform: scale(0.98);
-}
-
-/* Large Action Button */
-.action-btn-lg {
-  padding: 20px 24px;
-  border-radius: 12px;
-  font-size: 20px;
-  font-weight: 700;
-  min-height: 64px;
-  text-transform: none;
-}
-
-.action-btn-primary {
-  background-color: #007AFF;
-  color: white;
-}
-
-.action-btn-primary:active {
-  background-color: #0056b3;
-}
-
-.action-btn-outline {
-  background-color: white;
-  color: #007AFF;
-  border: 2px solid #007AFF;
-}
-
-.action-btn-outline:active {
-  background-color: #f0f7ff;
-}
-
-/* Screen Header */
-.screen-header {
-  font-size: 24px;
-  font-weight: 700;
-  color: #1f2937;
-  margin-bottom: 24px;
-}
-
-/* Section Header */
-.section-header {
-  font-size: 18px;
-  font-weight: 700;
-  color: #1f2937;
-  margin-bottom: 12px;
-}
-
-/* Pipeline Section */
-.pipeline-section {
-  margin-bottom: 24px;
-}
-
-.pipeline-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 12px;
-}
-
-.pipeline-count {
-  background-color: #e5e7eb;
-  color: #374151;
-  padding: 2px 8px;
-  border-radius: 9999px;
-  font-size: 14px;
-  font-weight: 500;
-}
-
-/* Navigation */
-.nav-btn.active {
-  color: #007AFF;
-}
-
-.nav-btn {
-  color: #6b7280;
-  transition: color 0.2s;
-}
-
-.nav-btn:active {
-  background-color: #f3f4f6;
-  color: #374151;
-}
-
-/* Floating Action Button */
-#fab {
-  transition: all 0.2s;
-  box-shadow: 0 6px 10px rgba(0,0,0,0.14), 0 2px 5px rgba(0,0,0,0.12);
-}
-
-#fab:active {
-  box-shadow: 0 3px 5px rgba(0,0,0,0.1);
-  transform: scale(0.95);
-}
-
-/* Empty State */
-.empty-state {
-  text-align: center;
-  padding: 48px 24px;
-  color: #9ca3af;
-}
-
-/* Loading */
-.loading {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 48px;
-}
-
-/* Back Button */
-.back-btn {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: #4b5563;
-  margin-bottom: 16px;
-  font-size: 16px;
-  font-weight: 500;
-  min-height: 48px;
-  padding: 12px 0;
-  background: none;
-  border: none;
-  cursor: pointer;
-}
-
-.back-btn:active {
-  color: #1f2937;
-}
-
-/* Menu Button */
-#menuBtn {
-  color: #007AFF;
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-#menuBtn:active {
-  color: #0056b3;
-}
-
-/* Phone Link */
-.phone-link {
-  color: #007AFF;
-  font-weight: 500;
-  font-size: 18px;
-}
-
-/* Date Display */
-.date-display {
-  font-size: 14px;
-  color: #6b7280;
-}
-
-/* Hide scrollbar */
-.scroll-container {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-
-.scroll-container::-webkit-scrollbar {
-  display: none;
-}
-
-/* Prevent text selection */
-.no-select {
-  -webkit-user-select: none;
-  user-select: none;
-}
-
-/* Project Card Content */
-.project-card h3 {
-  font-size: 16px;
-  font-weight: 600;
-  color: #111827;
-}
-
-.project-card p {
-  font-size: 14px;
-  color: #4b5563;
-  margin-top: 4px;
-}
-
-/* Project detail sections */
-.project-detail-card {
-  background: white;
-  border-radius: 16px;
-  margin-bottom: 16px;
-  padding: 20px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-}
-
-.detail-label {
-  font-size: 12px;
-  font-weight: 500;
-  color: #6b7280;
-  text-transform: uppercase;
-}
-
-.detail-value {
-  font-size: 16px;
-  font-weight: 600;
-  color: #111827;
-  margin-top: 2px;
-}
-
-/* Stage Item (Settings) */
-.stage-item {
-  cursor: grab;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-}
-
-.stage-item:active {
-  cursor: grabbing;
-  transform: scale(1.02);
-}
-
-.stage-item.dragging {
-  opacity: 0.5;
-  transform: scale(0.98);
-}
-
-.stage-item.drag-over {
-  border: 2px dashed #007AFF;
-  background: #f0f7ff;
-  transform: translateY(2px);
-}
-
-/* Swipe Indicators */
-.swipe-indicator {
-  z-index: 10;
-}
-
-.swipe-indicator.hidden {
-  display: none;
-}
-
-/* Action Buttons Grid */
-.action-buttons-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-  margin: 16px 0;
-}
-
-/* Touch optimization */
-@media (pointer: coarse) {
-  .project-card,
-  .action-btn,
-  .nav-btn {
-    min-height: 48px;
-  }
-}
-
-/* Better focus states for accessibility */
-button:focus,
-input:focus {
-  outline: 2px solid rgba(0, 122, 255, 0.5);
-  outline-offset: 2px;
-}
-
-/* Completion Animation */
-@keyframes checkmark-pop {
-  0% {
-    transform: translate(-50%, 0%) scale(0);
-    opacity: 0;
-  }
-  30% {
-    transform: translate(-50%, 0%) scale(1);
-    opacity: 1;
-  }
-  100% {
-    transform: translate(-50%, -20%) scale(0.8);
-    opacity: 0;
-  }
-}
-
-.completion-animation {
-  position: fixed;
-  z-index: 100;
-  pointer-events: none;
-}
-
-.completion-animation svg {
-  width: 40px;
-  height: 40px;
-  animation: checkmark-pop 0.7s ease-out forwards;
-}
-
-.completion-animation svg circle {
-  stroke: #22c55e;
-  stroke-width: 3;
-  fill: none;
-}
-
-.completion-animation svg path {
-  stroke: #22c55e;
-  stroke-width: 3;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  fill: none;
-}
-
-/* Stats Header */
-.stats-header {
-  display: flex;
-  justify-content: space-around;
-  background: #f3f4f6;
-  border-bottom: 1px solid #e5e7eb;
-  padding: 12px 16px;
-  margin: -16px -16px 16px -16px;
-}
-
-.stats-item {
-  text-align: center;
-}
-
-.stats-number {
-  font-size: 20px;
-  font-weight: 600;
-  color: #374151;
-  line-height: 1;
-}
-
-.stats-label {
-  font-size: 11px;
-  color: #6b7280;
-  margin-top: 2px;
-}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#007AFF">
+  <meta name="description" content="JobFlow - Fast job lead and project management for contractors">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="JobFlow">
+  <title>JobFlow</title>
+  
+  <!-- Google Fonts - Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- TailwindCSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="styles.css">
+  
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="manifest.json">
+  
+  <!-- Apple Touch Icon -->
+  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%23007AFF' width='100' height='100' rx='20'/><text x='50' y='65' font-size='50' text-anchor='middle' fill='white' font-family='system-ui'>J</text></svg>">
+</head>
+<body class="bg-gray-50 min-h-screen pb-16">
+  <!-- App Container -->
+  <div id="app" class="min-h-screen">
+    <!-- Header -->
+    <header class="bg-white text-blue-600 px-5 py-4 shadow-md sticky top-0 z-50 border-b border-gray-200">
+      <div class="flex items-center justify-between">
+        <h1 class="text-2xl font-bold">JobFlow</h1>
+        <div class="absolute left-1/2 transform -translate-x-1/2">
+          <span class="text-base text-gray-500" id="currentDate"></span>
+        </div>
+        <div class="flex items-center gap-3">
+          <button id="searchBtn" class="p-2">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+            </svg>
+          </button>
+          <button id="menuBtn" class="p-2">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Menu Dropdown -->
+    <div id="menuDropdown" class="hidden fixed top-16 right-4 bg-white rounded-lg shadow-lg border border-gray-200 z-50 py-2 min-w-32">
+      <button onclick="App.navigateTo('customers'); document.getElementById('menuDropdown').classList.add('hidden');" class="w-full px-4 py-3 text-left text-base font-medium text-gray-700 hover:bg-gray-100">Customers</button>
+      <button onclick="App.navigateTo('archive'); document.getElementById('menuDropdown').classList.add('hidden');" class="w-full px-4 py-3 text-left text-base font-medium text-gray-700 hover:bg-gray-100">Archive</button>
+      <button onclick="App.navigateTo('settings'); document.getElementById('menuDropdown').classList.add('hidden');" class="w-full px-4 py-3 text-left text-base font-medium text-gray-700 hover:bg-gray-100">Settings</button>
+    </div>
+
+    <!-- Search Overlay -->
+    <div id="searchOverlay" class="hidden fixed inset-0 bg-white z-50 overflow-y-auto">
+      <div class="p-4">
+        <div class="flex items-center gap-3 mb-4">
+          <button id="closeSearchBtn" class="p-2">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+          </button>
+          <input 
+            type="text" 
+            id="searchInput" 
+            class="flex-1 text-xl p-3 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none" 
+            placeholder="Search projects..."
+            autocomplete="off"
+          >
+        </div>
+        <div id="searchResults"></div>
+      </div>
+      <!-- Bottom Navigation for Search -->
+      <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-50">
+        <div class="flex h-16">
+          <button class="nav-btn flex-1 flex items-center justify-center h-full text-base font-medium" data-screen="pipeline" onclick="App.closeSearchAndNavigate('pipeline')">
+            Pipeline
+          </button>
+          <button class="nav-btn flex-1 flex items-center justify-center h-full text-base font-medium" data-screen="dashboard" onclick="App.closeSearchAndNavigate('dashboard')">
+            Dashboard
+          </button>
+        </div>
+      </nav>
+    </div>
+
+    <!-- Main Content Area -->
+    <main id="screen-container" class="p-4">
+      <!-- Screens render here -->
+    </main>
+
+    <!-- Bottom Navigation -->
+    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-50">
+      <div class="flex h-16">
+        <button class="nav-btn flex-1 flex items-center justify-center h-full text-base font-medium" data-screen="pipeline">
+          Pipeline
+        </button>
+        <button class="nav-btn flex-1 flex items-center justify-center h-full text-base font-medium" data-screen="dashboard">
+          Dashboard
+        </button>
+      </div>
+    </nav>
+
+    <!-- Floating New Lead Button -->
+    <button id="fab" class="fixed bottom-20 right-4 w-18 h-18 rounded-full bg-[#007AFF] text-white flex items-center justify-center shadow-lg z-40" style="width: 72px; height: 72px;" data-screen="newlead">
+      <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Load Components and Screens (must load before app.js) -->
+  <script src="lib/photodb.js"></script>
+  <script src="lib/store.js"></script>
+  <script src="components/ProjectCard.js"></script>
+  <script src="components/ActionButton.js"></script>
+  <script src="screens/OnboardingScreen.js"></script>
+  <script src="screens/DashboardScreen.js"></script>
+  <script src="screens/QuickCaptureScreen.js"></script>
+  <script src="screens/ProjectDetailScreen.js"></script>
+  <script src="screens/PipelineScreen.js"></script>
+  <!-- ESTIMATE FEATURE - remove this line to disable -->
+  <script src="screens/EstimateScreen.js"></script>
+  <script src="screens/SettingsScreen.js"></script>
+  <script src="screens/ArchiveScreen.js"></script>
+  <script src="screens/CustomersScreen.js"></script>
+  <script src="screens/CustomerDetailScreen.js"></script>
+  
+  <!-- Load Main App -->
+  <script src="app.js"></script>
+</body>
+</html>
