@@ -1,12 +1,13 @@
-const CACHE_NAME = 'jobflow-v3';
+const CACHE_NAME = 'jobflow-v8';
 const ASSETS_TO_CACHE = [
-  './', './index.html', './app.js', './styles.css',
+  './', './index.html', './app.js', './styles.css', './tailwind-compiled.css',
   './lib/store.js', './lib/photodb.js',
   './components/ProjectCard.js', './components/ActionButton.js',
   './screens/DashboardScreen.js', './screens/QuickCaptureScreen.js',
   './screens/ProjectDetailScreen.js', './screens/PipelineScreen.js',
   './screens/SettingsScreen.js', './screens/ArchiveScreen.js',
-  './screens/CustomersScreen.js', './screens/CustomerDetailScreen.js'
+  './screens/CustomersScreen.js', './screens/CustomerDetailScreen.js',
+  './screens/OnboardingScreen.js', './screens/EstimateScreen.js'
 ];
 
 self.addEventListener('install', (event) => {
