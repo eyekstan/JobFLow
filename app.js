@@ -416,7 +416,7 @@ const App = {
       return;
     }
     
-    if (this.currentScreen === 'newlead' || this.currentScreen === 'detail' || this.currentScreen === 'settings' || this.currentScreen === 'archive' || this.currentScreen === 'customers' || this.currentScreen === 'customerDetail' || this.currentScreen === 'onboarding' || this.currentScreen === 'estimate') {
+    if (this.currentScreen === 'newlead' || this.currentScreen === 'detail' || this.currentScreen === 'settings' || this.currentScreen === 'archive' || this.currentScreen === 'customers' || this.currentScreen === 'customerDetail' || this.currentScreen === 'onboarding' || this.currentScreen === 'estimate' || this.currentScreen === 'materials') {
       fab.style.display = 'none';
     } else {
       fab.style.display = 'flex';
@@ -470,6 +470,9 @@ const App = {
         break;
       case 'archive':
         container.innerHTML = ArchiveScreen.render();
+        break;
+      case 'materials':
+        container.innerHTML = MaterialsScreen.render();
         break;
       case 'customers':
         container.innerHTML = CustomersScreen.render();

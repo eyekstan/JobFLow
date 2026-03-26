@@ -40,8 +40,11 @@ const ProjectDetailScreen = {
       ? `<span class="reminder-badge">🔔 ${reminders.length} reminder${reminders.length > 1 ? 's' : ''}</span>`
       : '';
 
-    // Schedule async photo load after render
-    setTimeout(() => ProjectDetailScreen.loadPhotos(projectId), 50);
+    // Schedule async loads after render
+    setTimeout(() => {
+      ProjectDetailScreen.loadPhotos(projectId);
+      ProjectDetailScreen.loadMaterials(projectId);
+    }, 50);
 
     return `
       <div class="max-w-lg mx-auto pb-20">
@@ -222,6 +225,33 @@ const ProjectDetailScreen = {
           </div>
           <div id="photoGallery" class="photo-gallery">
             <p class="text-gray-400 text-sm text-center py-4 col-span-3">Loading photos...</p>
+          </div>
+        </div>
+
+        <!-- Materials -->
+        <div class="project-detail-card">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="section-label">🧱 Materials</h3>
+            <span class="mat-count-badge" id="matCountBadge"></span>
+          </div>
+          <div id="matList"></div>
+          <!-- Add material form -->
+          <div id="matAddForm" class="mat-add-form">
+            <input type="text" id="matName" class="form-input mat-input" placeholder="Material name *">
+            <div class="mat-row">
+              <input type="text" id="matQty" class="form-input mat-input-sm" placeholder="Qty">
+              <input type="text" id="matUnit" class="form-input mat-input-sm" placeholder="Unit (ea, ft…)">
+            </div>
+            <div class="mat-row">
+              <input type="text" id="matSupplier" class="form-input mat-input-sm" placeholder="Supplier">
+              <div class="relative flex-1">
+                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm font-medium">${currencySymbol}</span>
+                <input type="number" id="matCost" class="form-input mat-input-sm" style="padding-left:1.75rem;" placeholder="Cost" min="0" step="0.01">
+              </div>
+            </div>
+            <button onclick="ProjectDetailScreen.addMaterial('${projectId}')" class="action-btn action-btn-primary mt-2" style="font-size:0.9375rem;">
+              + Add Material
+            </button>
           </div>
         </div>
 
@@ -549,7 +579,82 @@ const ProjectDetailScreen = {
   cancelContactEdit() {
     document.getElementById('contactDisplay').classList.remove('hidden');
     document.getElementById('contactEdit').classList.add('hidden');
+  },
+
+  // ---- Materials ----
+
+  loadMaterials(projectId) {
+    const list = document.getElementById('matList');
+    const badge = document.getElementById('matCountBadge');
+    if (!list) return;
+
+    const items = Store.getMaterialsForProject(projectId);
+    const currency = Store.getCurrencySymbol();
+    const unpurchased = items.filter(m => !m.purchased).length;
+
+    if (badge) {
+      badge.textContent = items.length > 0
+        ? `${unpurchased} needed · ${items.length} total`
+        : '';
+    }
+
+    if (items.length === 0) {
+      list.innerHTML = '<p class="text-gray-400 text-sm mb-3">No materials added yet.</p>';
+      return;
+    }
+
+    list.innerHTML = items.map(m => `
+      <div class="mat-item ${m.purchased ? 'mat-purchased' : ''}" id="mat-${m.id}">
+        <button class="mat-check-btn ${m.purchased ? 'mat-check-done' : ''}"
+          onclick="ProjectDetailScreen.toggleMaterial('${m.id}', '${projectId}')">
+          ${m.purchased
+            ? `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>`
+            : ''}
+        </button>
+        <div class="mat-item-body">
+          <span class="mat-item-name">${m.name}</span>
+          <div class="mat-item-meta">
+            ${m.qty ? `<span>${m.qty}${m.unit ? ' ' + m.unit : ''}</span>` : ''}
+            ${m.supplier ? `<span>📍 ${m.supplier}</span>` : ''}
+            ${m.cost ? `<span>${currency}${Number(m.cost).toLocaleString()}</span>` : ''}
+          </div>
+        </div>
+        <button class="mat-delete-btn" onclick="ProjectDetailScreen.deleteMaterial('${m.id}', '${projectId}')">✕</button>
+      </div>
+    `).join('');
+  },
+
+  addMaterial(projectId) {
+    const name = document.getElementById('matName')?.value.trim();
+    if (!name) { document.getElementById('matName')?.focus(); return; }
+
+    Store.addMaterial(projectId, {
+      name,
+      qty: document.getElementById('matQty')?.value.trim(),
+      unit: document.getElementById('matUnit')?.value.trim(),
+      supplier: document.getElementById('matSupplier')?.value.trim(),
+      cost: document.getElementById('matCost')?.value,
+    });
+
+    // Clear form fields
+    ['matName','matQty','matUnit','matSupplier','matCost'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.value = '';
+    });
+    document.getElementById('matName')?.focus();
+    this.loadMaterials(projectId);
+  },
+
+  toggleMaterial(materialId, projectId) {
+    Store.toggleMaterialPurchased(materialId);
+    this.loadMaterials(projectId);
+  },
+
+  deleteMaterial(materialId, projectId) {
+    Store.deleteMaterial(materialId);
+    this.loadMaterials(projectId);
   }
+
 };
 
 window.ProjectDetailScreen = ProjectDetailScreen;
