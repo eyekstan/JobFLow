@@ -376,7 +376,7 @@ const App = {
     }
 
     // Root screens reset the stack; all others push onto it
-    const rootScreens = ['dashboard', 'pipeline', 'onboarding'];
+    const rootScreens = ['dashboard', 'pipeline', 'calendar', 'onboarding'];
     if (rootScreens.includes(screen)) {
       this._history = [];
     } else if (screen !== this.currentScreen || projectId !== this.projectId) {
@@ -416,7 +416,7 @@ const App = {
       return;
     }
     
-    if (this.currentScreen === 'newlead' || this.currentScreen === 'detail' || this.currentScreen === 'settings' || this.currentScreen === 'archive' || this.currentScreen === 'customers' || this.currentScreen === 'customerDetail' || this.currentScreen === 'onboarding' || this.currentScreen === 'estimate' || this.currentScreen === 'materials') {
+    if (this.currentScreen === 'newlead' || this.currentScreen === 'detail' || this.currentScreen === 'settings' || this.currentScreen === 'archive' || this.currentScreen === 'customers' || this.currentScreen === 'customerDetail' || this.currentScreen === 'onboarding' || this.currentScreen === 'estimate' || this.currentScreen === 'materials' || this.currentScreen === 'calendar') {
       fab.style.display = 'none';
     } else {
       fab.style.display = 'flex';
@@ -470,6 +470,10 @@ const App = {
         break;
       case 'archive':
         container.innerHTML = ArchiveScreen.render();
+        break;
+      case 'calendar':
+        container.innerHTML = CalendarScreen.render();
+        CalendarScreen.attachListeners && CalendarScreen.attachListeners();
         break;
       case 'materials':
         container.innerHTML = MaterialsScreen.render();
